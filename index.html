@@ -1,101 +1,100 @@
-<html xmlns:wb="http://open.weibo.com/wb"> 
-	<head>
-		<meta charset="UTF-8">
-		<meta name="Keywords" content="阿云嘎, 在远方, infoGAphics, 游戏">
-        <title>AYG 牧场快递</title>
-        <!--For WeiBo 必填-->
-        <meta property="og:type" content="webpage" />
-        <meta property="og:url" content="http://www.ayanga.club/box/index.html" />
-        <meta property="og:title" content="#阿云嘎在远方# 趕快来 #和阿云嘎一起送快递# 吧！ @阿云嘎Musical" />
-        <meta property="og:description" content="有关快递小哥的趣味小游戏" />
-
-        <!--选填-->
-        <meta property="og:image" content="http://www.ayanga.club/quiz/icon/l.png" />
-        <meta name="weibo:webpage:create_at" content="2020-11-23 08:08:08" />
-        <meta name="weibo:webpage:update_at" content="2020-11-23 08:08:08" />
-        
-		<style>
-		.w3-tiny{font-size:10px!important}.w3-small{font-size:12px!important}.w3-medium{font-size:15px!important}.w3-large{font-size:18px!important}
-        .w3-xlarge{font-size:24px!important}.w3-xxlarge{font-size:36px!important}.w3-xxxlarge{font-size:48px!important}.w3-jumbo{font-size:64px!important}
-
-		body{
-            overflow:   hidden;
-            font-family: Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "HYQiHei-FZS", "STXihei", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-            font-size: 2vw;
-        }
-
-        .container{
-            border-radius:8px;
-            background-color:rgb(255,255,255);
-            align-items:center;
-            padding:5px!important;
-            justify-content: center;
-        }
-
-		.game, .rules{
-			display:-webkit-flex;/* Safari */
-            display:flex;  
-            flex-direction: column;
-            align-items:center;
-            padding:5px!important;  
-            margin: auto;  
-
-        }
-
-        .control input{
-            width:15vw;
-            height:8vw;
-            margin:2vw;
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AYG 牧场快递 by infoGAphics｜阿云嘎</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <style>
+        body {
+            background-image: url('./images/head2.png');
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-attachment: fixed;
+            background-size: 600px;
+            overflow-y: hidden;
         }
         
+    </style>
+  </head>
+  
+  <body onkeydown="doKeyDown(event)"><!--身体-->
+    <div class="container-fluid" style="height:100%; max-width:600px"><!-- fixed width container -->
+        <div id="titlepic">
+            <img src="./images/IGPlogo.png" class="pt-2 d-block float-right img-fluid" style="max-width:100px">
+            <img src="./images/head1.png" class="mx-auto d-block img-fluid" style="max-width:400px">
+        </div>
         
-        </style>
+        <div class="container-fluid mt-3">
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#home">游戏</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu1">商城</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu2">明信片</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu3">说明</a>
+            </li>
+          </ul>
         
-		<script src="../quiz/jquery.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-		<script src="https://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script>
-		
-
-		 
-	</head>
-    <body onkeydown="doKeyDown(event)" style="background-color:rgb(255, 107, 8);"><!--身体-->
-        <div class="container">
-            <div id="gamearea" class="game">
-                <div class="other" style="flex: 0 0"><h1 class="title">與阿云嘎一起送快递</h1></div>
-                <div class="other" style="flex: 0 0">姚遠猪猪迷路了，你可以帮他把快递送到目的地吗？</div>
-                <canvas id="canvas" style="display:flex;"></canvas>
-                <div class="other">
-                    <div id="msg"></div>
-                    <div class="levels">
-                    <select id="levelSelect"></select>
-                        <input type="button" value="选择关卡" onclick="gotoLevel(0)">
-                        <input type="button" value="随机关卡" onclick="gotoLevel(1)">
-                        <input type="button" value="游戏说明" onclick="showHelp(1)">
-                        <input type="button" value="重玩本关" onclick="gotoLevel(3)">
-                        <input type="button" value="我的商城" >
-                    </div>
-                    <div class="control">
-                        <input type="button" value=" ↑ " onclick="go('up')">
-                        <input type="button" value=" ↓ " onclick="go('down')">
-                        <input type="button" value="←" onclick="go('left')">
-                        <input type="button" value="→" onclick="go('right')">
-                    </div> 
-                </div>
+          <!-- Tab panes -->
+          <div class="tab-content" style='box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);'>
+            <div id="home" class="container tab-pane active"  style="background-color:white"><br>
+                <div id="gamearea" class="game">
+                    <canvas id="canvas" style="display:flex;max-width:500px"></canvas>
+                    <div class="other">
+                        <div id="msg"></div>
+                        <div class="levels">
+                            <select id="levelSelect"></select>
+                                <input type="button" value="选择关卡" onclick="gotoLevel(0)">
+                                <input type="button" value="随机关卡" onclick="gotoLevel(1)">
+                                <input type="button" value="游戏说明" onclick="showHelp(1)">
+                                <input type="button" value="重玩本关" onclick="gotoLevel(3)">
+                                <input type="button" value="我的商城" >
+                        </div>
+                        <div class="control">
+                            <input type="button" value=" ↑ " onclick="go('up')">
+                            <input type="button" value=" ↓ " onclick="go('down')">
+                            <input type="button" value="←" onclick="go('left')">
+                            <input type="button" value="→" onclick="go('right')">
+                        </div> 
+                    </div><!-- end of other -->
+                    <p>&nbsp;</p>
+                </div> <!-- end of game area -->
+            </div><!-- end of home tab -->
+            <div id="menu1" class="container tab-pane fade"  style="background-color:white"><br>
+              <h4><b>-- 商城--</b></h4>
+              <p>商城的内容</p>
             </div>
-      
-        
-        
-            <div id="gamerules" class="rules" style="display:none">
-                show game rules
-                <h4><b>-- 游戏规则 --</b></h4>
+            <div id="menu2" class="container tab-pane fade"  style="background-color:white"><br>
+              <h4><b>-- 明信片--</b></h4>
+              <p>明信片的内容</p>
+            </div>
+            <div id="menu3" class="container tab-pane fade"  style="background-color:white"><br>
+              <h4><b>-- 游戏规则 --</b></h4>
                 <p><h5>“远方不是脚到达的地方，而是心超越的地方。”</h5></p>
                 <ul>
                     <li>
                         然而只有屬性的物件並不是太有用，我們希望建立出來的新物件有一些方法 (method) 可以呼叫。那我們該如何幫新物件增加方法呢？這時候 prototype 就可以派上用場了。直接說結論：我們得將方法定義在 constructor function 的 prototype 屬性上。例如，我們希望建立的新物件有 eat() 方法，那我們就得定義 Animal.prototype.eat：
                     </li>
                 </ul>
-                <input type="button" value="Close" onclick="showHelp(0)">
             </div>
+          </div>
+        </div>
+
+          
+      
+        
+         
             <div id="gameresult" class="rules" style="display:none">
                 This is the result page
                 <!--1.图片必须出现在html文件<img>标签里,JS写入的图片无法抓取
@@ -105,11 +104,9 @@
                 <input type="button" value="Close" onclick="showHelp(0)">
 
             </div>
-        </div>
-		<wb:share-button appkey="2085456599" addition="full" type="button" ralateUid="6072165414" default_text="#阿云嘎在远方# TESTING "></wb:share-button><br/>
-        
-        
-	</body>
+    </div>
+ 
+	
 	<script src="js/mapdata100.js"></script>
 	<script>
 		var can = document.getElementById("canvas");
@@ -240,7 +237,7 @@
 		function init(){
             //InitMap();
             //DrawMap(levels[0]);
-            alert ("init");
+            //alert ("init");
 
             //get Local Storage
             uid = parseInt(localStorage.getItem("AYGkuaidiId"),10);
@@ -499,5 +496,5 @@
         
         
     </script>
-    
+    </body>
 </html>
