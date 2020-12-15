@@ -1,0 +1,503 @@
+<html xmlns:wb="http://open.weibo.com/wb"> 
+	<head>
+		<meta charset="UTF-8">
+		<meta name="Keywords" content="阿云嘎, 在远方, infoGAphics, 游戏">
+        <title>AYG 牧场快递</title>
+        <!--For WeiBo 必填-->
+        <meta property="og:type" content="webpage" />
+        <meta property="og:url" content="http://www.ayanga.club/box/index.html" />
+        <meta property="og:title" content="#阿云嘎在远方# 趕快来 #和阿云嘎一起送快递# 吧！ @阿云嘎Musical" />
+        <meta property="og:description" content="有关快递小哥的趣味小游戏" />
+
+        <!--选填-->
+        <meta property="og:image" content="http://www.ayanga.club/quiz/icon/l.png" />
+        <meta name="weibo:webpage:create_at" content="2020-11-23 08:08:08" />
+        <meta name="weibo:webpage:update_at" content="2020-11-23 08:08:08" />
+        
+		<style>
+		.w3-tiny{font-size:10px!important}.w3-small{font-size:12px!important}.w3-medium{font-size:15px!important}.w3-large{font-size:18px!important}
+        .w3-xlarge{font-size:24px!important}.w3-xxlarge{font-size:36px!important}.w3-xxxlarge{font-size:48px!important}.w3-jumbo{font-size:64px!important}
+
+		body{
+            overflow:   hidden;
+            font-family: Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "HYQiHei-FZS", "STXihei", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+            font-size: 2vw;
+        }
+
+        .container{
+            border-radius:8px;
+            background-color:rgb(255,255,255);
+            align-items:center;
+            padding:5px!important;
+            justify-content: center;
+        }
+
+		.game, .rules{
+			display:-webkit-flex;/* Safari */
+            display:flex;  
+            flex-direction: column;
+            align-items:center;
+            padding:5px!important;  
+            margin: auto;  
+
+        }
+
+        .control input{
+            width:15vw;
+            height:8vw;
+            margin:2vw;
+        }
+        
+        
+        </style>
+        
+		<script src="../quiz/jquery.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script>
+		
+
+		 
+	</head>
+    <body onkeydown="doKeyDown(event)" style="background-color:rgb(255, 107, 8);"><!--身体-->
+        <div class="container">
+            <div id="gamearea" class="game">
+                <div class="other" style="flex: 0 0"><h1 class="title">與阿云嘎一起送快递</h1></div>
+                <div class="other" style="flex: 0 0">姚遠猪猪迷路了，你可以帮他把快递送到目的地吗？</div>
+                <canvas id="canvas" style="display:flex;"></canvas>
+                <div class="other">
+                    <div id="msg"></div>
+                    <div class="levels">
+                    <select id="levelSelect"></select>
+                        <input type="button" value="选择关卡" onclick="gotoLevel(0)">
+                        <input type="button" value="随机关卡" onclick="gotoLevel(1)">
+                        <input type="button" value="游戏说明" onclick="showHelp(1)">
+                        <input type="button" value="重玩本关" onclick="gotoLevel(3)">
+                        <input type="button" value="我的商城" >
+                    </div>
+                    <div class="control">
+                        <input type="button" value=" ↑ " onclick="go('up')">
+                        <input type="button" value=" ↓ " onclick="go('down')">
+                        <input type="button" value="←" onclick="go('left')">
+                        <input type="button" value="→" onclick="go('right')">
+                    </div> 
+                </div>
+            </div>
+      
+        
+        
+            <div id="gamerules" class="rules" style="display:none">
+                show game rules
+                <h4><b>-- 游戏规则 --</b></h4>
+                <p><h5>“远方不是脚到达的地方，而是心超越的地方。”</h5></p>
+                <ul>
+                    <li>
+                        然而只有屬性的物件並不是太有用，我們希望建立出來的新物件有一些方法 (method) 可以呼叫。那我們該如何幫新物件增加方法呢？這時候 prototype 就可以派上用場了。直接說結論：我們得將方法定義在 constructor function 的 prototype 屬性上。例如，我們希望建立的新物件有 eat() 方法，那我們就得定義 Animal.prototype.eat：
+                    </li>
+                </ul>
+                <input type="button" value="Close" onclick="showHelp(0)">
+            </div>
+            <div id="gameresult" class="rules" style="display:none">
+                This is the result page
+                <!--1.图片必须出现在html文件<img>标签里,JS写入的图片无法抓取
+                    2.图片尺寸大于92x92，文件体积小于500k
+                    3.图片文件可http请求成功访问，没有防盗链机制-->
+                <img src="./card/1.jpg" height="300px">
+                <input type="button" value="Close" onclick="showHelp(0)">
+
+            </div>
+        </div>
+		<wb:share-button appkey="2085456599" addition="full" type="button" ralateUid="6072165414" default_text="#阿云嘎在远方# TESTING "></wb:share-button><br/>
+        
+        
+	</body>
+	<script src="js/mapdata100.js"></script>
+	<script>
+		var can = document.getElementById("canvas");
+		var msg = document.getElementById("msg");
+		var cxt = can.getContext("2d");
+		var w = 35,h = 35;
+		var curMap;//当前的地图
+		var curLevel;//当前等级的地图
+		var curMan;//初始化小人
+		var iCurlevel = 0;//关卡数
+        var moveTimes = 0;//移动了多少次
+        var maxCurlevel = 10; //可去的关卡数    ** To RESET to 1
+        var uid=0;
+        var uname="";
+
+		//预加载所有图片
+		var oImgs = {
+					"block" : "images/block.gif",
+					"wall" : "images/wall.png",
+					"box" : "images/box.png",
+					"ball" : "images/ball.png",
+					"up" : "images/up.png",
+					"down" : "images/down.png",
+					"left" : "images/left.png",
+					"right" : "images/right.png",
+        }
+                
+		//监听窗口尺寸改变
+        window.addEventListener('resize', resizeCanvas, false);
+        
+		//自适应画布大小
+		var scale = 1; //缩放比
+		function resizeCanvas() {
+            var winW = document.documentElement.clientWidth;
+            var winH = document.documentElement.clientHeight;//窗口尺寸
+            var pad = 10;   //border left 
+            var len;
+            if (winW>winH) {
+                len = Math.min(winW*.75,winH);
+                document.querySelector(".game").style.flexDirection="row";
+                document.querySelector(".other").style.flexDirection="column";
+            } else {
+                len = Math.min(winW,winH*.75);
+                document.querySelector(".game").style.flexDirection="column";
+                document.querySelector(".other").style.flexDirection="row";
+            }
+            
+            scale = Math.min((len-pad*2) / 560, 1.8); //缩放比, Max 840
+            //console.log ("Width: "+ winW + ", Height: " + winH + ", scale: " + scale);
+
+            
+            //自适应大小
+            w = 35 * scale;
+            h = 35 * scale;
+            can.width = 16 * w;
+            can.height = 16 * h;
+            InitMap();//初始化地板
+            DrawMap(curMap);//绘制出当前等级的地图
+        }
+                
+		//选择和跳转关卡
+		var lvSel = document.getElementById("levelSelect");
+		var lvTot = 100;
+		//for (var i = 0; i < lvTot; i++) {
+        for (var i = 0; i < maxCurlevel; i++) {     //Only allow permitted level
+            var option = Object.assign(
+                document.createElement('option'), {
+                            value: i,
+                            textContent: `第${i + 1}关`,
+                });
+            lvSel.appendChild(option);
+        }
+                
+		function gotoLevel(mode) {
+            if (2==mode) {//下一关
+                iCurlevel = (iCurlevel<lvTot-1) && (iCurlevel < maxCurlevel) ? iCurlevel+1 : 0;
+            } else if (1==mode) {//随机关
+                //iCurlevel = Math.round(Math.random()*lvTot);
+                iCurlevel = Math.round(Math.random()*maxCurlevel);
+            } else if (0==mode) {//选择关
+                for (var option of document.querySelectorAll('option')) {
+                    if(option.selected) {
+                        iCurlevel = parseInt(option.value);
+                        break;
+                    }
+                }
+            }
+
+            initLevel();//初始当前等级关卡
+            moveTimes = 0;//游戏关卡移动步数清零
+            showMoveInfo();//初始化当前关卡数据
+        }
+                
+		function imgPreload(srcs,callback){
+            var count = 0,imgNum = 0,images = {};
+
+            for(src in srcs){
+                        imgNum++;
+            }
+            for(src in srcs ){
+                images[src] = new Image();
+                images[src].onload = function(){
+                            //判断是否所有的图片都预加载完成
+                            if (++count >= imgNum){
+                                callback(images);
+                            }
+                        }
+                images[src].src = srcs[src];
+            }
+        }
+
+        var block,wall,box,ball,up,down,left,right;
+        
+		imgPreload(oImgs,function(images){
+					//console.log(images.block);
+					block = images.block;
+					wall = images.wall;
+					box = images.box;
+					ball = images.ball;
+					up = images.up;
+					down = images.down;
+					left = images.left;
+					right = images.right;
+					init();
+                });
+                
+		//初始化游戏
+		function init(){
+            //InitMap();
+            //DrawMap(levels[0]);
+            alert ("init");
+
+            //get Local Storage
+            uid = parseInt(localStorage.getItem("AYGkuaidiId"),10);
+            uname = localStorage.getItem ("AYGkuaidiName");
+            console.log ("GameId:"+uid+", Input Name:"+uname);
+
+            if (uname!="" || uid>0){    //record exists
+                //get the user details
+
+            }
+
+
+            initLevel();//初始化对应等级的游戏
+            showMoveInfo();//初始化对应等级的游戏数据
+        }
+                
+		//绘制地板
+		function InitMap(){
+            for (var i=0;i<16 ;i++ ){
+                for (var j=0;j<16 ;j++ ){
+                    cxt.drawImage(block,w*j,h*i,w,h);
+                }
+            }
+        }
+        
+		//小人位置坐标
+		function Point(x,y){
+            this.x = x;
+            this.y = y;
+        }
+
+		var perPosition = new Point(5,5);//小人的初始标值
+		//绘制每个游戏关卡地图
+		function DrawMap(level){
+            for (var i=0;i<level.length ;i++ ){
+                for (var j=0;j<level[i].length ;j++ ) {
+                    var pic = block;//初始图片
+                    switch (level[i][j]) {
+                        case 1://绘制墙壁
+                            pic = wall;
+                            break;
+                        case 2://绘制陷进
+                            pic = ball;
+                            break;
+                        case 3://绘制箱子
+                            pic = box;
+                            break;
+                        case 4://绘制小人
+                            pic = curMan;//小人有四个方向 具体显示哪个图片需要和上下左右方位值关联
+                            //获取小人的坐标位置
+                            perPosition.x = i;
+                            perPosition.y = j;
+                            break;
+                        case 5://绘制箱子及陷进位置
+                            pic = box;
+                            break;
+                    }
+                    //每个图片不一样宽 需要在对应地板的中心绘制地图
+                    cxt.drawImage(pic,w*j-(pic.width*scale-w)/2,h*i-(pic.height*scale-h),pic.width*scale,pic.height*scale)
+                }
+            }
+        }
+
+		//初始化游戏等级
+		function initLevel(){
+            curMap = copyArray(levels[iCurlevel]);//当前移动过的游戏地图
+            curLevel = levels[iCurlevel];//当前等级的初始地图
+            curMan = down;//初始化小人
+            InitMap();//初始化地板
+            DrawMap(curMap);//绘制出当前等级的地图
+        }
+        
+		//下一关
+		function NextLevel(i){
+            //iCurlevel当前的地图关数
+            iCurlevel = iCurlevel + i;
+            if (iCurlevel<0) {
+                iCurlevel = 0;
+                return;
+            }
+
+            var len = levels.length;
+            if (iCurlevel > len-1) {
+                iCurlevel = len-1;
+            }
+
+            initLevel();//初始当前等级关卡
+            moveTimes = 0;//游戏关卡移动步数清零
+            showMoveInfo();//初始化当前关卡数据
+        }
+        
+		//小人移动
+		function go(dir){
+            var p1,p2;
+            switch (dir){
+                case "up":
+                    curMan = up;
+                    //获取小人前面的两个坐标位置来进行判断小人是否能够移动
+                    p1 = new Point(perPosition.x-1,perPosition.y);
+                    p2 = new Point(perPosition.x-2,perPosition.y);
+                    break;
+                case "down":
+                    curMan = down;
+                    p1 = new Point(perPosition.x+1,perPosition.y);
+                    p2 = new Point(perPosition.x+2,perPosition.y);
+                    break;
+                case "left":
+                    curMan = left;
+                    p1 = new Point(perPosition.x,perPosition.y-1);
+                    p2 = new Point(perPosition.x,perPosition.y-2);
+                    break;
+                case "right":
+                    curMan = right;
+                    p1 = new Point(perPosition.x,perPosition.y+1);
+                    p2 = new Point(perPosition.x,perPosition.y+2);
+                    break;
+            }
+
+            //若果小人能够移动的话，更新游戏数据，并重绘地图
+            if (Trygo(p1,p2)){
+                moveTimes ++;
+                showMoveInfo();
+            }
+
+            //重绘地板
+            InitMap();
+
+            //重绘当前更新了数据的地图
+            DrawMap(curMap);
+
+            //若果移动完成了进入下一关
+            if (checkFinish()) {
+                //定时器解决渲染地图后再弹窗
+                setTimeout(()=>{
+                    alert("恭喜过关！！");
+                    //window.open("./result.html", "_blank", "scrollbars=0,status=0,toolbar=0")
+                    document.getElementById("gameresult").style.display = "flex";
+                    document.getElementById("gamearea").style.display = "none";
+                    //NextLevel(1);
+                    gotoLevel(2);
+                },0)
+            }
+        }
+                
+
+		//判断是否推成功
+		function checkFinish(){
+            for (var i=0;i<curMap.length ;i++ ) {
+                for (var j=0;j<curMap[i].length ;j++ ) {
+                    //当前移动过的地图和初始地图进行比较，若果初始地图上的陷进参数在移动之后不是箱子的话就指代没推成功
+                    if (curLevel[i][j] == 2 && curMap[i][j] != 3 || curLevel[i][j] == 5 && curMap[i][j] != 3) {
+                                return false;
+                    }
+                }
+            }
+            return true;
+        }
+                
+		//判断小人是否能够移动
+		function Trygo(p1,p2){
+            if(p1.x<0) return false;//若果超出地图的上边，不通过
+            if(p1.y<0) return false;//若果超出地图的左边，不通过
+            if(p1.x>curMap.length) return false;//若果超出地图的下边，不通过
+            if(p1.y>curMap[0].length) return false;//若果超出地图的右边，不通过
+            if(curMap[p1.x][p1.y]==1) return false;//若果前面是墙，不通过
+            if (curMap[p1.x][p1.y]==3 || curMap[p1.x][p1.y]==5) {//若果小人前面是箱子那就还需要判断箱子前面有没有障碍物(箱子/墙)
+                if (curMap[p2.x][p2.y]==1 || curMap[p2.x][p2.y]==3){
+                    return false;
+                }
+                //若果判断不成功小人前面的箱子前进一步
+                curMap[p2.x][p2.y] = 3;//更改地图对应坐标点的值
+                //console.log(curMap[p2.x][p2.y]);
+            }
+
+            //若果都没判断成功小人前进一步
+            curMap[p1.x][p1.y] = 4;//更改地图对应坐标点的值
+
+            //若果小人前进了一步，小人原来的位置如何显示
+            var v = curLevel[perPosition.x][perPosition.y];
+
+            if (v!=2){//若果刚开始小人位置不是陷进的话
+            
+                if (v==5){//可能是5 既有箱子又陷进
+                    v=2;//若果小人本身就在陷进里面的话移开之后还是显示陷进
+                }else{
+                    v=0;//小人移开之后之前小人的位置改为地板
+                }
+            }
+
+            //重置小人位置的地图参数
+            curMap[perPosition.x][perPosition.y] = v;
+            //若果判断小人前进了一步，更新坐标值
+            perPosition = p1;
+            //若果小动了 返回true 指代能够移动小人
+            return true;
+        }
+                
+		//判断是否推成功
+		//与键盘上的上下左右键关联
+		function doKeyDown(event){
+            switch (event.keyCode) {
+                case 37://左键头
+                case 65:
+                    go("left");
+                    break;
+                case 38://上键头
+                case 87:
+                    go("up");
+                    break;
+                case 39://右箭头
+                case 68:
+                    go("right");
+                    break;
+                case 40://下箭头
+                case 83:
+                    go("down");
+                    break;
+            }
+        }
+                
+		//完善关卡数据及游戏说明
+		function showMoveInfo(){
+			msg.innerHTML = "第" + (iCurlevel+1) +"/100关 移动次数: "+ moveTimes;
+        }
+                
+		//游戏说明
+        var showhelp = false;
+        
+		function showHelp(flag){
+            //showhelp = !showhelp;
+            if (flag){
+                document.getElementById("gamerules").style.display = "flex";
+                document.getElementById("gamearea").style.display = "none";
+                document.getElementById("gameresult").style.display = "none";
+                //msg.innerHTML = "用键盘上的上、下、左、右键移动小人，把箱子全部推到小球的位置即可过关。箱子只可向前推，不能往后拉，并且小人一次只能推动一个箱子。";
+                showhelp = true;
+            }else{
+                document.getElementById("gamerules").style.display = "none";
+                document.getElementById("gamearea").style.display = "flex";
+                document.getElementById("gameresult").style.display = "none";
+                showhelp = false;
+                //showMoveInfo();
+            }
+		}
+
+		//克隆二维数组
+		function copyArray(arr){
+            var b=[];//每次移动更新地图数据都先清空再添加新的地图
+            for (var i=0;i<arr.length ;i++ ){
+                b[i] = arr[i].concat();//链接两个数组
+            }
+            return b;
+        }
+                    
+        resizeCanvas();
+        
+        
+    </script>
+    
+</html>
