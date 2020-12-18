@@ -1,2 +1,2 @@
-# boxgame
-# https://monfffy.github.io/boxgame/
+boxgame
+https://monfffy.github.io/boxgame/
